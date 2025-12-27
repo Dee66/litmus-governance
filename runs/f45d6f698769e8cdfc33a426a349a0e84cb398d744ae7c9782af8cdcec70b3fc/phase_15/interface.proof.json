@@ -1,0 +1,1 @@
+{"forbidden": ["stdin", "stdout", "UI", "CLI", "logs with decisions"], "interface": "artifact-only"}

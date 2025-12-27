@@ -1,0 +1,24 @@
+[
+  {
+    "claim": "The snapshot contains at least one file with a recognized code extension",
+    "status": "known",
+    "evidence": ["snapshot.canonical.bin"]
+  },
+  {
+    "claim": "All critical paths in the dependency graph have associated test files",
+    "status": "unknown"
+  },
+  {
+    "claim": "The codebase exhibits architectural posture consistent with guarded evolution",
+    "status": "unknown"
+  },
+  {
+    "claim": "No configuration files contain contradictory key-value pairs",
+    "status": "unknown"
+  },
+  {
+    "claim": "The safe-to-change surface includes at least one file",
+    "status": "known",
+    "evidence": ["safe_to_change_surface.json"]
+  }
+]
