@@ -221,5 +221,3 @@ with open(f"runs/{run_id}/phase_0/proof.json", "w", encoding="utf-8") as f:
 
 if run_manager.run_state == RunState.INVALID:
     hard_fail("Execution ended with run_state = INVALID")
-    
-    
