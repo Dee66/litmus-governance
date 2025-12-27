@@ -7,14 +7,15 @@ import hashlib
 import json
 import glob
 from collections import Counter
+from dataclasses import dataclass
 from core.state import RunState
 from core.failure import hard_fail
 
 
+@dataclass
 class RunManager:
-    def __init__(self):
-        self.run_state = RunState.INVALID
-        self.transition_count = 0
+    run_state: RunState = RunState.INVALID
+    transition_count: int = 0
 
     def set_run_state(self, new_state: RunState) -> None:
         if self.run_state != new_state:
