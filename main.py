@@ -5,20 +5,26 @@ Main execution logic for the decision-making system.
 import os
 import hashlib
 import json
+import glob
+from collections import Counter
 from core.state import RunState
 from core.failure import hard_fail
 
 
-run_state = RunState.INVALID
-transition_count = 0
+class RunManager:
+    def __init__(self):
+        self.run_state = RunState.INVALID
+        self.transition_count = 0
 
-def set_run_state(new_state: RunState) -> None:
-    global run_state, transition_count
-    if run_state != new_state:
-        transition_count += 1
-        if transition_count > 1:
-            hard_fail("Run state transitioned more than once")
-        run_state = new_state
+    def set_run_state(self, new_state: RunState) -> None:
+        if self.run_state != new_state:
+            self.transition_count += 1
+            if self.transition_count > 1:
+                hard_fail("Run state transitioned more than once")
+            self.run_state = new_state
+
+
+run_manager = RunManager()
 
 if not os.path.isfile("input/snapshot.bin"):
     hard_fail("Input file input/snapshot.bin is missing")
@@ -31,14 +37,14 @@ run_id = hashlib.sha256(snapshot_bytes).hexdigest()
 os.makedirs("runs", exist_ok=True)
 os.makedirs(f"runs/{run_id}", exist_ok=True)
 
-with open("runs/README.invalid", "w") as f:
+with open("runs/README.invalid", "w", encoding="utf-8") as f:
     f.write("THIS DIRECTORY DEFINES VALIDITY.\n")
 
 if not os.path.isfile("schemas/decision_allowlist.json"):
     hard_fail("Allowlist file missing")
 
 try:
-    with open("schemas/decision_allowlist.json", "r") as f:
+    with open("schemas/decision_allowlist.json", "r", encoding="utf-8") as f:
         allowlist = json.load(f)
     if not isinstance(allowlist, list) or not all(isinstance(s, str) for s in allowlist):
         hard_fail("Allowlist invalid")
@@ -46,7 +52,7 @@ except json.JSONDecodeError:
     hard_fail("Allowlist invalid")
 
 try:
-    with open("rules/claims.json", "r") as f:
+    with open("rules/claims.json", "r", encoding="utf-8") as f:
         claims = json.load(f)
     if not isinstance(claims, list):
         hard_fail("Claims not a list")
@@ -70,7 +76,7 @@ for c in claims:
 
 uncertainty_data = {"claims": claims}
 os.makedirs(f"runs/{run_id}/phase_13", exist_ok=True)
-with open(f"runs/{run_id}/phase_13/uncertainty.decision.json", "w") as f:
+with open(f"runs/{run_id}/phase_13/uncertainty.decision.json", "w", encoding="utf-8") as f:
     json.dump(uncertainty_data, f, sort_keys=True)
 
 original_unknown = sum(1 for c in claims if c['status'] == 'unknown')
@@ -83,14 +89,14 @@ if new_unknown >= original_unknown:
 
 proof_data_13 = {
     "run_id": run_id,
-    "run_state": run_state.value,
+    "run_state": run_manager.run_state.value,
     "artifact_list": ["uncertainty.decision.json", "proof.json"]
 }
-with open(f"runs/{run_id}/phase_13/proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_13/proof.json", "w", encoding="utf-8") as f:
     json.dump(proof_data_13, f, sort_keys=True)
 
 extensions = ['py'] * 10
-from collections import Counter
+
 count = Counter(extensions)
 if len(count) > 1 and max(count.values()) == min(count.values()):
     hard_fail("Tie in language count")
@@ -103,7 +109,7 @@ language_data = {
     "boundary_rules": "No semantic references to secondary languages"
 }
 os.makedirs(f"runs/{run_id}/phase_14", exist_ok=True)
-with open(f"runs/{run_id}/phase_14/language_boundary.decision.json", "w") as f:
+with open(f"runs/{run_id}/phase_14/language_boundary.decision.json", "w", encoding="utf-8") as f:
     json.dump(language_data, f, sort_keys=True)
 
 count['js'] = 1
@@ -114,13 +120,13 @@ if new_primary == primary and new_secondary == secondary:
 
 proof_data_14 = {
     "run_id": run_id,
-    "run_state": run_state.value,
+    "run_state": run_manager.run_state.value,
     "artifact_list": ["language_boundary.decision.json", "proof.json"]
 }
-with open(f"runs/{run_id}/phase_14/proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_14/proof.json", "w", encoding="utf-8") as f:
     json.dump(proof_data_14, f, sort_keys=True)
 
-import inspect
+
 source = snapshot_bytes.decode('utf-8', errors='ignore')
 if 'tkinter' in source or 'prompt' in source or 'dashboard' in source:
     pass  # hard_fail("Forbidden UI/CLI")
@@ -132,15 +138,15 @@ interface_data = {
     "forbidden": ["stdin", "stdout", "UI", "CLI", "logs with decisions"]
 }
 os.makedirs(f"runs/{run_id}/phase_15", exist_ok=True)
-with open(f"runs/{run_id}/phase_15/interface.proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_15/interface.proof.json", "w", encoding="utf-8") as f:
     json.dump(interface_data, f, sort_keys=True)
 
 proof_data_15 = {
     "run_id": run_id,
-    "run_state": run_state.value,
+    "run_state": run_manager.run_state.value,
     "artifact_list": ["interface.proof.json", "proof.json"]
 }
-with open(f"runs/{run_id}/phase_15/proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_15/proof.json", "w", encoding="utf-8") as f:
     json.dump(proof_data_15, f, sort_keys=True)
 
 canonical_artifacts = []
@@ -156,20 +162,20 @@ verdict_data = {
     "signature": signature
 }
 os.makedirs(f"runs/{run_id}/phase_16", exist_ok=True)
-with open(f"runs/{run_id}/phase_16/final.verdict.json", "w") as f:
+with open(f"runs/{run_id}/phase_16/final.verdict.json", "w", encoding="utf-8") as f:
     json.dump(verdict_data, f, sort_keys=True)
 
 proof_data_16 = {
     "run_id": run_id,
-    "run_state": run_state.value,
+    "run_state": run_manager.run_state.value,
     "artifact_list": ["final.verdict.json", "proof.json"]
 }
-with open(f"runs/{run_id}/phase_16/proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_16/proof.json", "w", encoding="utf-8") as f:
     json.dump(proof_data_16, f, sort_keys=True)
 
-set_run_state(RunState.ADVISORY)
+run_manager.set_run_state(RunState.ADVISORY)
 
-import glob
+
 decision_files = glob.glob(f"runs/{run_id}/**/*.json", recursive=True)
 for f in decision_files:
     basename = os.path.basename(f)
@@ -196,21 +202,23 @@ if len(existing_outcome) > 1:
 # Check run_state contradicts outcome
 outcome_basenames = [os.path.basename(f) for f in existing_outcome]
 if "refusal.json" in outcome_basenames:
-    if run_state != RunState.REFUSED:
+    if run_manager.run_state != RunState.REFUSED:
         hard_fail("Run state contradicts outcome artifact type")
 elif "decision_summary.json" in outcome_basenames:
-    if run_state not in [RunState.ADVISORY, RunState.BLOCKING]:
+    if run_manager.run_state not in [RunState.ADVISORY, RunState.BLOCKING]:
         hard_fail("Run state contradicts outcome artifact type")
 
 # Emit proof.json
 proof_data = {
     "run_id": run_id,
-    "run_state": run_state.value,
+    "run_state": run_manager.run_state.value,
     "artifact_list": [os.path.basename(f) for f in decision_files]
 }
 os.makedirs(f"runs/{run_id}/phase_0", exist_ok=True)
-with open(f"runs/{run_id}/phase_0/proof.json", "w") as f:
+with open(f"runs/{run_id}/phase_0/proof.json", "w", encoding="utf-8") as f:
     json.dump(proof_data, f, sort_keys=True)
 
-if run_state == RunState.INVALID:
+if run_manager.run_state == RunState.INVALID:
     hard_fail("Execution ended with run_state = INVALID")
+    
+    
