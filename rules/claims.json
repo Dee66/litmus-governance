@@ -1,24 +1,30 @@
 [
   {
-    "claim": "The snapshot contains at least one file with a recognized code extension",
+    "claim": "The system produces deterministic outputs for identical inputs",
     "status": "known",
-    "evidence": ["snapshot.canonical.bin"]
+    "evidence": ["final.verdict.json"]
   },
   {
-    "claim": "All critical paths in the dependency graph have associated test files",
+    "claim": "No external network calls or API dependencies exist in the codebase",
     "status": "unknown"
   },
   {
-    "claim": "The codebase exhibits architectural posture consistent with guarded evolution",
-    "status": "unknown"
-  },
-  {
-    "claim": "No configuration files contain contradictory key-value pairs",
-    "status": "unknown"
-  },
-  {
-    "claim": "The safe-to-change surface includes at least one file",
+    "claim": "All governance decisions are based on explicit human claims",
     "status": "known",
-    "evidence": ["safe_to_change_surface.json"]
+    "evidence": ["claims.json"]
+  },
+  {
+    "claim": "The codebase contains no forbidden I/O operations like stdin/stdout/UI",
+    "status": "unknown"
+  },
+  {
+    "claim": "The system enforces artifact-only interfaces with no side effects",
+    "status": "known",
+    "evidence": ["interface.proof.json"]
+  },
+  {
+    "claim": "Run state transitions occur exactly once per execution",
+    "status": "known",
+    "evidence": ["RunManager"]
   }
 ]
