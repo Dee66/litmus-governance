@@ -1,0 +1,14 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    uses: Dee66/.github/.github/workflows/ci-python.yml@main
+    with:
+      python-version: "3.11"
+      test-command: "python main.py --help || echo 'No test suite yet'"
+      requirements-file: "requirements.txt"
