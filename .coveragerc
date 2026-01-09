@@ -1,7 +1,0 @@
-[coverage:run]
-source = src
-branch = true
-
-[coverage:report]
-show_missing = true
-skip_covered = false
