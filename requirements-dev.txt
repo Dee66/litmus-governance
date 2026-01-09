@@ -1,0 +1,4 @@
+# Development dependencies
+# Install with: pip install -r requirements-dev.txt
+# This file is kept for compatibility. Dependencies are defined in pyproject.toml
+-e .[dev]
